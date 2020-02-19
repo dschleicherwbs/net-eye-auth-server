@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const UserSettings = require('./UserSettings');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -34,6 +35,12 @@ userSchema.pre('save', async function(next) {
   if (user.isModified('password')) {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
+  }
+  try {
+    const userSettings = new UserSettings({ user_id: user._id });
+    userSettings.save();
+  } catch (error) {
+    throw new Error({ error: 'Ops! Something went wrong!' });
   }
   next();
 });

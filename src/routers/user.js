@@ -1,6 +1,7 @@
 const express = require('express');
 const auth = require('../middleware/auth');
 const User = require('../models/User');
+const UserSettings = require('../models/UserSettings');
 
 const router = require('express').Router();
 
@@ -13,13 +14,21 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/deleteall', async (req, res) => {
+  try {
+    const result = await User.deleteMany().exec();
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+});
+
 router.post('/register', async (req, res) => {
   // Creates a new User
   try {
     const user = new User(req.body);
     await user.save();
-    const token = await user.generateAuthToken();
-    res.status(201).json({ user: { _id: user._id }, token });
+    res.status(201).json({ user: { _id: user._id } });
   } catch (error) {
     res.status(400).json(error);
   }
@@ -48,6 +57,49 @@ router.get('/me', auth, (req, res) => {
     email: req.user.email,
     token: req.token
   });
+});
+
+router.get('/me/settings', auth, async (req, res) => {
+  // Get logged user Settings
+  try {
+    const user_id = { user_id: req.user._id };
+    let userSettings = await UserSettings.findOne(user_id);
+    if (!userSettings) userSettings = new UserSettings(user_id);
+    res.status(200).json({ userSettings });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+router.get('/me/settings/all', async (req, res) => {
+  // Get logged user Settings
+  try {
+    const userSettings = await UserSettings.find();
+    res.status(200).json({ userSettings });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+router.post('/me/settings/deleteall', async (req, res) => {
+  // Get logged user Settings
+  try {
+    const userSettings = await UserSettings.deleteMany();
+    res.status(200).json({ userSettings });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+router.put('/me/settings/save', auth, async (req, res) => {
+  // Get logged user Settings
+  try {
+    const update = req.body;
+    const user_id = { user_id: req.user._id };
+    const result = await UserSettings.updateOne(user_id, update);
+
+    res.status(200).json({ result });
+  } catch (error) {
+    res.status(500).json(error);
+  }
 });
 
 router.post('/me/logout', auth, async (req, res) => {
