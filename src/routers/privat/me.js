@@ -18,7 +18,10 @@ router.get('/me/settings', auth, async (req, res) => {
   try {
     const user_id = { user_id: req.user._id };
     let userSettings = await UserSettings.findOne(user_id);
-    if (!userSettings) userSettings = new UserSettings(user_id);
+    if (!userSettings) {
+      userSettings = new UserSettings(user_id);
+      userSettings.save();
+    }
     res.status(200).json({ userSettings });
   } catch (error) {
     res.status(500).json(error);
