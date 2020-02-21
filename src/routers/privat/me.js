@@ -1,9 +1,8 @@
-const express = require('express');
 const auth = require('../../middleware/auth');
 const UserSettings = require('../../models/UserSettings');
 const router = require('express').Router();
 
-router.get('/me', auth, (req, res) => {
+router.get('/', auth, async (req, res) => {
   // Get logged user Profile
   res.json({
     _id: req.user._id,
@@ -13,7 +12,7 @@ router.get('/me', auth, (req, res) => {
   });
 });
 
-router.get('/me/settings', auth, async (req, res) => {
+router.get('/settings', auth, async (req, res) => {
   // Get logged user Settings
   try {
     const user_id = { user_id: req.user._id };
@@ -28,7 +27,7 @@ router.get('/me/settings', auth, async (req, res) => {
   }
 });
 
-router.put('/me/settings/save', auth, async (req, res) => {
+router.put('/settings/save', auth, async (req, res) => {
   // Get logged user Settings
   try {
     const update = req.body;
@@ -41,7 +40,7 @@ router.put('/me/settings/save', auth, async (req, res) => {
   }
 });
 
-router.post('/me/logout', auth, async (req, res) => {
+router.post('/logout', auth, async (req, res) => {
   // Log user out of device
   try {
     req.user.tokens = req.user.tokens.filter(token => token.token != req.token);
@@ -52,7 +51,7 @@ router.post('/me/logout', auth, async (req, res) => {
   }
 });
 
-router.post('/me/logoutall', auth, async (req, res) => {
+router.post('/logoutall', auth, async (req, res) => {
   // Log user out of ALL devices
   try {
     req.user.tokens = [];
@@ -63,7 +62,7 @@ router.post('/me/logoutall', auth, async (req, res) => {
   }
 });
 
-router.post('/me/delete', auth, async (req, res) => {
+router.post('/delete', auth, async (req, res) => {
   // Delete user
   try {
     await req.user.delete();

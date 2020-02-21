@@ -1,3 +1,4 @@
+var compression = require('compression');
 const express = require('express');
 const cors = require('cors');
 
@@ -9,16 +10,21 @@ require('./db/db');
 // Import Routes
 const userRouter = require('./routers/user');
 const userMeRouter = require('./routers/privat/me');
+const network = require('./routers/privat/network');
+const company = require('./routers/privat/company');
 
 const app = express();
 
 // Middleware
 app.use(cors());
+app.use(compression());
 app.use(express.json());
 
 // Middleware Routes
 app.use('/api/user', userRouter);
-app.use('/api/user', userMeRouter);
+app.use('/api/user/me', userMeRouter);
+app.use('/api/networks', network);
+app.use('/api/companys', company);
 
 // Server Listen
 app.listen(port, () => {

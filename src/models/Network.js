@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const networkSchema = mongoose.Schema({
+const networkSchema = Schema({
   name: {
     type: String,
     required: true,
@@ -11,27 +11,23 @@ const networkSchema = mongoose.Schema({
     required: true,
     trim: true
   },
+  status: {
+    name: {
+      type: String,
+      default: 'ok'
+    },
+    priority: {
+      type: Number,
+      default: 1
+    }
+  },
   ip: {
     type: String,
     required: true,
     trim: true
   },
-  company_id: {
-    type: String,
-    required: true
-  },
-  event_ids: {
-    type: Array,
-    default: []
-  }
+  company: { type: Schema.Types.ObjectId, ref: 'Company', required: true },
+  events: [{ type: Schema.Types.ObjectId, ref: 'NetworkEvent' }]
 });
 
-// id: 1,
-// name: 'Network One',
-// place: 'Berlin',
-// ip: '111.147.a.158',
-// company_id: 1,
-// status: {
-//   name: 'warning',
-//   priority: 2
-// }
+module.exports = model('Network', networkSchema);

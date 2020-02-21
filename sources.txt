@@ -1,0 +1,4 @@
+https://expressjs.com/en/advanced/best-practice-security.html
+https://www.codementor.io/@mattgoldspink/nodejs-best-practices-du1086jja
+https://zellwk.com/blog/mongoose/
+https://zellwk.com/blog/mongoose-population/
