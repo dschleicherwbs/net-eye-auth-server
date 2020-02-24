@@ -1,3 +1,17 @@
+_tmr
+-edit user data
+-save imgs? outside db- include path
+-show msgs
+-add new msgs
+
+
+
+
+Validate All fking data _AUTOMATED?? Like schemes reqiuremend
+-minmax
+
+
+
 models.network
 -validate ip4 / ip6
 

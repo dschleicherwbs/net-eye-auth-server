@@ -32,7 +32,10 @@ router.post('/fill', auth, async (req, res, next) => {
 // Get all Networks
 router.get('/', auth, async (req, res, next) => {
   try {
-    const networks = await Network.find().populate('company');
+    const networks = await Network.find()
+      .populate('company')
+      .populate('events')
+      .exec();
     return res.status(200).json(networks);
   } catch (error) {
     return next(error);

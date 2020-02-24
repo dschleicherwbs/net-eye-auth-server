@@ -12,6 +12,7 @@ const userRouter = require('./routers/user');
 const userMeRouter = require('./routers/privat/me');
 const network = require('./routers/privat/network');
 const company = require('./routers/privat/company');
+const networkEvents = require('./routers/privat/networkEvent');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use('/api/user', userRouter);
 app.use('/api/user/me', userMeRouter);
 app.use('/api/networks', network);
+app.use('/api/events', networkEvents);
 app.use('/api/companys', company);
 
 // Server Listen

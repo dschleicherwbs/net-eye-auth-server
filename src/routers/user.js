@@ -1,6 +1,6 @@
-const auth = require('../middleware/auth');
 const User = require('../models/User');
 const UserSettings = require('../models/UserSettings');
+const UserData = require('../models/UserData');
 
 const router = require('express').Router();
 
@@ -14,9 +14,20 @@ router.post('/register', async (req, res) => {
     // Create UserSettings
     const userSettings = new UserSettings({ user_id: user._id });
     await userSettings.save();
+    console.log('Create UserData');
+
+    // Create UserData
+    const userData = new UserData({
+      user_id: user._id,
+      name: req.body.name
+    });
+    await userData.save();
+    console.log('Create UserData Done');
 
     res.status(201).json({ user: { _id: user._id } });
   } catch (error) {
+    console.log(error);
+
     res.status(400).json(error);
   }
 });

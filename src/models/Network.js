@@ -12,14 +12,8 @@ const networkSchema = Schema({
     trim: true
   },
   status: {
-    name: {
-      type: String,
-      default: 'ok'
-    },
-    priority: {
-      type: Number,
-      default: 1
-    }
+    type: Number,
+    default: 0
   },
   ip: {
     type: String,

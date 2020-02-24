@@ -1,5 +1,6 @@
 const auth = require('../../middleware/auth');
 const UserSettings = require('../../models/UserSettings');
+const UserData = require('../../models/UserData');
 const router = require('express').Router();
 
 router.get('/', auth, async (req, res) => {
@@ -7,8 +8,7 @@ router.get('/', auth, async (req, res) => {
   res.json({
     _id: req.user._id,
     name: req.user.name,
-    email: req.user.email,
-    token: req.token
+    email: req.user.email
   });
 });
 
@@ -22,6 +22,18 @@ router.get('/settings', auth, async (req, res) => {
       userSettings.save();
     }
     res.status(200).json({ userSettings });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+router.get('/data', auth, async (req, res) => {
+  // Get logged user Settings
+  try {
+    const user_id = { user_id: req.user._id };
+    let userData = await UserData.findOne(user_id);
+    if (!userData) return res.status(400).send("Can't find user");
+
+    res.status(200).json({ userData });
   } catch (error) {
     res.status(500).json(error);
   }
