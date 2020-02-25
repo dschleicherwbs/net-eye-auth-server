@@ -8,7 +8,7 @@ router.post('/', auth, async (req, res, next) => {
     const { name, contactName, contactMail, contactTel } = req.body;
     const company = new Company({ name, contactName, contactMail, contactTel });
     company.save();
-    return res.send(201).json(company);
+    return res.status(201).json(company);
   } catch (error) {
     return next(error);
   }
@@ -25,7 +25,7 @@ router.post('/fill', auth, async (req, res, next) => {
         contactTel
       });
       company.save();
-      return res.send(201).json(company);
+      return res.status(201).json(company);
     } catch (error) {
       return next(error);
     }

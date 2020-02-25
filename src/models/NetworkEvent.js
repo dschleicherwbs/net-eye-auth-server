@@ -8,7 +8,7 @@ const networkEventSchema = Schema({
         type: Number,
         default: Date.now
       },
-      user: { type: Schema.Types.ObjectId, ref: 'UserData' },
+      user: { type: Schema.Types.ObjectId, ref: 'UserData', required: true },
       msg: {
         type: String,
         required: true

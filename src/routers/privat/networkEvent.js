@@ -3,17 +3,17 @@ const NetworkEvent = require('../../models/NetworkEvent');
 const Network = require('../../models/Network');
 const router = require('express').Router();
 
-// Create New Network
+// Create New NetworkEvent
 router.post('/', auth, async (req, res, next) => {
   try {
-    const { history, networkId } = req.body;
+    const { messeges, history, networkId } = req.body;
     // Get Netwrok
     const network = await Network.findById(networkId);
     // Check if there is a Network
     if (!network) return res.status(400).send("Can't find Network");
 
     // Create and save new NetworkEvent
-    const event = new NetworkEvent({ history });
+    const event = new NetworkEvent({ messeges, history });
     await event.save();
 
     // Push Event to Network and save
@@ -26,17 +26,19 @@ router.post('/', auth, async (req, res, next) => {
   }
 });
 
-// Get all Networks
+// Get all NetworksEvents
 router.get('/', auth, async (req, res, next) => {
   try {
-    const events = await NetworkEvent.find();
+    const events = await NetworkEvent.find()
+      .populate('messeges.user')
+      .exec();
     return res.status(200).json(events);
   } catch (error) {
     return next(error);
   }
 });
 
-// Get on Network by ID
+// Get on NetworkEvent by ID
 router.get('/:id', auth, async (req, res, next) => {
   try {
     const event = await NetworkEvent.findById(req.body);

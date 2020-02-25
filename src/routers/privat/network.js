@@ -8,7 +8,7 @@ router.post('/', auth, async (req, res, next) => {
     const { name, place, ip, company } = req.body;
     const network = new Network({ name, place, ip, company });
     network.save();
-    return res.send(201).json(network);
+    return res.status(201).json(network);
   } catch (error) {
     return next(error);
   }
@@ -20,7 +20,7 @@ router.post('/fill', auth, async (req, res, next) => {
       const { name, place, ip, company } = bodyItem;
       const network = new Network({ name, place, ip, company });
       network.save();
-      return res.send(201).json(network);
+      return res.status(201).json(network);
     } catch (error) {
       return next(error);
     }
@@ -32,7 +32,7 @@ router.get('/', auth, async (req, res, next) => {
   try {
     const networks = await Network.find()
       .populate('company')
-      .populate('events')
+      .populate({ path: 'events', populate: { path: 'messeges.user' } })
       .exec();
     return res.status(200).json(networks);
   } catch (error) {
