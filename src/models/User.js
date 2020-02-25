@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const UserSettings = require('./UserSettings');
+const UserData = require('./UserData');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -36,6 +37,17 @@ userSchema.pre('save', async function(next) {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
   }
+  next();
+});
+
+userSchema.pre('remove', async function(next) {
+  const user = this;
+
+  // remove user settings
+  const settingsResult = await UserSettings.deleteMany({ user_id: user._id });
+  // remove user data
+  const dataResult = await UserData.deleteMany({ user_id: user._id });
+
   next();
 });
 

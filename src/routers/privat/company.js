@@ -15,8 +15,6 @@ router.post('/', auth, async (req, res, next) => {
 });
 
 router.post('/fill', auth, async (req, res, next) => {
-  console.log(req.body);
-
   req.body.forEach(bodyItem => {
     try {
       const { name, contactName, contactMail, contactTel } = bodyItem;

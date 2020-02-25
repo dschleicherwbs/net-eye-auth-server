@@ -14,7 +14,6 @@ router.post('/register', async (req, res) => {
     // Create UserSettings
     const userSettings = new UserSettings({ user_id: user._id });
     await userSettings.save();
-    console.log('Create UserData');
 
     // Create UserData
     const userData = new UserData({
@@ -22,12 +21,9 @@ router.post('/register', async (req, res) => {
       name: req.body.name
     });
     await userData.save();
-    console.log('Create UserData Done');
 
     res.status(201).json({ user: { _id: user._id } });
   } catch (error) {
-    console.log(error);
-
     res.status(400).json(error);
   }
 });
