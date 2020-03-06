@@ -6,7 +6,11 @@ const userDataSchema = new Schema({
     type: String,
     required: true
   },
-  imgPath: {
+  avatarPath: {
+    type: String,
+    default: ''
+  },
+  phone: {
     type: String,
     default: ''
   },
@@ -21,5 +25,15 @@ const userDataSchema = new Schema({
     }
   }
 });
+
+// userSchema.pre('update', async function(next) {
+//   // Hash password before save
+//   const user = this;
+//   if (user.isModified('password')) {
+//     const salt = await bcrypt.genSalt(10);
+//     user.password = await bcrypt.hash(user.password, salt);
+//   }
+//   next();
+// });
 
 module.exports = model('UserData', userDataSchema);

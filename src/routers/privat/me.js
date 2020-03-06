@@ -3,6 +3,29 @@ const UserSettings = require('../../models/UserSettings');
 const UserData = require('../../models/UserData');
 const router = require('express').Router();
 
+// uploads file in memory
+// https://github.com/expressjs/multer
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: function(req, file, cb) {
+    cb(null, Date.now() + '_' + file.originalname);
+  }
+});
+const upload = multer({ storage });
+
+// const upload = multer({ dest: 'uploads/' });
+
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
+
+// format type to post with axios
+const axios = require('axios').default;
+const FormData = require('form-data');
+const fs = require('fs');
+
 router.get('/', auth, async (req, res) => {
   // Get logged user Profile
   res.json({
@@ -26,8 +49,9 @@ router.get('/settings', auth, async (req, res) => {
     res.status(500).json(error);
   }
 });
+
 router.get('/data', auth, async (req, res) => {
-  // Get logged user Settings
+  // Get logged user Data
   try {
     const user_id = { user_id: req.user._id };
     let userData = await UserData.findOne(user_id);
@@ -38,9 +62,54 @@ router.get('/data', auth, async (req, res) => {
     res.status(500).json(error);
   }
 });
+router.post(
+  '/data/save',
+  auth,
+  upload.single('file'),
+  async (req, res, next) => {
+    // save logged user Data
+    try {
+      const update = req.body;
+      const user_id = { user_id: req.user._id };
+
+      if (req.file) {
+        try {
+          const url = 'http://localhost:5000/api/upload';
+          const filePath = req.file.path;
+          const userAvatar = fs.createReadStream(filePath);
+          const form_data = new FormData();
+          form_data.append('file', userAvatar);
+
+          const request_config = {
+            headers: {
+              ...form_data.getHeaders()
+            }
+          };
+
+          const imgResult = await axios.post(url, form_data, request_config);
+
+          fs.unlink(filePath, err => {
+            if (err) throw new Error('Could not delete ' + filePath);
+            console.log(filePath + ' was deleted');
+          });
+
+          console.log(imgResult);
+          return res.status(200).json({ fileUrl: imgResult.data.fileUrl });
+        } catch (error) {
+          return next(error);
+        }
+      }
+      // req.body.avatarPath = imgResult.fileUrl;
+
+      // const result = await UserData.updateOne(user_id, update);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+);
 
 router.put('/settings/save', auth, async (req, res) => {
-  // Get logged user Settings
+  // save logged user Settings
   try {
     const update = req.body;
     const user_id = { user_id: req.user._id };
