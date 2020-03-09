@@ -62,6 +62,7 @@ router.get('/data', auth, async (req, res) => {
     res.status(500).json(error);
   }
 });
+
 router.post(
   '/data/save',
   auth,
@@ -87,21 +88,20 @@ router.post(
           };
 
           const imgResult = await axios.post(url, form_data, request_config);
+          req.body.avatarPath = imgResult.data.fileUrl;
 
           fs.unlink(filePath, err => {
             if (err) throw new Error('Could not delete ' + filePath);
-            console.log(filePath + ' was deleted');
           });
 
-          console.log(imgResult);
-          return res.status(200).json({ fileUrl: imgResult.data.fileUrl });
+          const result = await UserData.updateOne(user_id, update);
+          console.log(result);
+
+          return res.status(200).json({ result });
         } catch (error) {
           return next(error);
         }
       }
-      // req.body.avatarPath = imgResult.fileUrl;
-
-      // const result = await UserData.updateOne(user_id, update);
     } catch (error) {
       res.status(500).json(error);
     }
