@@ -11,7 +11,14 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/');
   },
   filename: function(req, file, cb) {
-    cb(null, Date.now() + '_' + file.originalname);
+    cb(
+      null,
+      req.user._id +
+        '_' +
+        new Date().getMilliseconds() +
+        '.' +
+        file.originalname.split('.').pop()
+    );
   }
 });
 const upload = multer({ storage });
@@ -68,41 +75,42 @@ router.post(
   auth,
   upload.single('file'),
   async (req, res, next) => {
-    // save logged user Data
     try {
-      const update = req.body;
+      const update = {
+        name: req.body.name,
+        employee: {
+          active: true,
+          title: req.body.employee_title
+        }
+      };
       const user_id = { user_id: req.user._id };
 
       if (req.file) {
-        try {
-          const url = 'http://localhost:5000/api/upload';
-          const filePath = req.file.path;
-          const userAvatar = fs.createReadStream(filePath);
-          const form_data = new FormData();
-          form_data.append('file', userAvatar);
+        const url = 'http://localhost:5000/api/upload';
+        const filePath = req.file.path;
+        const userAvatar = fs.createReadStream(filePath);
+        const form_data = new FormData();
+        form_data.append('file', userAvatar);
 
-          const request_config = {
-            headers: {
-              ...form_data.getHeaders()
-            }
-          };
+        const request_config = {
+          headers: {
+            ...form_data.getHeaders()
+          }
+        };
 
-          const imgResult = await axios.post(url, form_data, request_config);
-          req.body.avatarPath = imgResult.data.fileUrl;
+        const imgResult = await axios.post(url, form_data, request_config);
+        req.body.avatarPath = imgResult.data.fileUrl;
 
-          fs.unlink(filePath, err => {
-            if (err) throw new Error('Could not delete ' + filePath);
-          });
-
-          const result = await UserData.updateOne(user_id, update);
-          console.log(result);
-
-          return res.status(200).json({ result });
-        } catch (error) {
-          return next(error);
-        }
+        fs.unlink(filePath, err => {
+          if (err) throw new Error('Could not delete ' + filePath);
+        });
       }
+
+      const result = await UserData.updateOne(user_id, update);
+      return res.status(200).json({ result });
     } catch (error) {
+      console.log(error);
+
       res.status(500).json(error);
     }
   }

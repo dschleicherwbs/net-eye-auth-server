@@ -20,6 +20,11 @@ const app = express();
 app.use(cors());
 app.use(compression());
 app.use(express.json());
+app.use(function(req, res, next) {
+  setTimeout(() => {
+    next();
+  }, 200);
+});
 
 // Middleware Routes
 app.use('/api/user', userRouter);
